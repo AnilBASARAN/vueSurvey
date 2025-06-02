@@ -17,7 +17,9 @@
           :rating="result.rating"
         ></survey-result>
       </ul>
-
+      <p v-else-if="!error && results.length == 0">
+        No stored experiences found.Start adding !
+      </p>
       <p v-else>{{ error }}</p>
     </base-card>
   </section>
