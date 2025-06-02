@@ -18,7 +18,7 @@
         ></survey-result>
       </ul>
 
-      <p v-else>No stored experiences found.</p>
+      <p v-else>{{ error }}</p>
     </base-card>
   </section>
 </template>
@@ -34,13 +34,13 @@ export default {
     return {
       results: [],
       isLoading: false,
+      error: null,
     };
   },
   methods: {
     loadExperiences() {
-      console.log('hey!');
       this.isLoading = true;
-
+      this.error = null;
       fetch(
         'https://vue-http-demo-fa677-default-rtdb.firebaseio.com/surveys.json',
       )
@@ -70,8 +70,9 @@ export default {
           this.results = results;
         })
         .catch((error) => {
-          console.error('LoadExperiences failed:', error);
           this.isLoading = false;
+          console.log(error);
+          this.error = 'LoadExperiences failed!';
         });
     },
   },
