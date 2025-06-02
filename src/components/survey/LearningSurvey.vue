@@ -96,7 +96,7 @@ export default {
         })
         .catch((error) => {
           console.log(error);
-          this.error = 'Something went wrong * try again later!';
+          this.error = error.message;
         });
 
       this.enteredName = '';
