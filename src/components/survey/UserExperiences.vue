@@ -3,11 +3,11 @@
     <base-card>
       <h2>Submitted Experiences</h2>
       <div>
-        <base-button @click="loadExperiences"
-          >Load Submitted Experiences</base-button
-        >
+        <base-button @click="loadExperiences">
+          Load Submitted Experiences
+        </base-button>
       </div>
-      <p v-if="isLoading">Loading</p>
+      <p v-if="isLoading">Loading…</p>
 
       <ul v-else-if="!isLoading && results && results.length > 0">
         <survey-result
@@ -17,6 +17,7 @@
           :rating="result.rating"
         ></survey-result>
       </ul>
+
       <p v-else>No stored experiences found.</p>
     </base-card>
   </section>
@@ -37,28 +38,40 @@ export default {
   },
   methods: {
     loadExperiences() {
+      console.log('hey!');
       this.isLoading = true;
+
       fetch(
         'https://vue-http-demo-fa677-default-rtdb.firebaseio.com/surveys.json',
       )
         .then((response) => {
-          if (response.ok) {
-            return response.json();
+          if (!response.ok) {
+            // Throw on any non-2xx status
+            throw new Error(
+              `Fetch failed (${response.status}): ${response.statusText}`,
+            );
           }
+          return response.json();
         })
         .then((data) => {
-          setTimeout(() => {
-            this.isLoading = false;
-            const results = [];
-            for (const id in data) {
+          // Immediately process data (no delay)
+          this.isLoading = false;
+
+          const results = [];
+          for (const id in data) {
+            if (Object.prototype.hasOwnProperty.call(data, id)) {
               results.push({
                 id: id,
                 name: data[id].name,
                 rating: data[id].rating,
               });
             }
-            this.results = results;
-          }, 2000);
+          }
+          this.results = results;
+        })
+        .catch((error) => {
+          console.error('LoadExperiences failed:', error);
+          this.isLoading = false;
         });
     },
   },
